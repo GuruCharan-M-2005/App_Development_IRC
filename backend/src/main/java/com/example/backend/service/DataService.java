@@ -7,11 +7,16 @@ import org.springframework.stereotype.Service;
 
 import com.example.backend.model.DataModel;
 import com.example.backend.model.ImageModel;
+import com.example.backend.model.UserModel;
 import com.example.backend.repository.DataRepo;
 import com.example.backend.repository.ImageRepo;
+import com.example.backend.repository.UserRepo;
 
 @Service
 public class DataService {
+
+    @Autowired
+    private UserRepo userRepo;
 
     @Autowired
     private DataRepo dataRepo;
@@ -31,8 +36,21 @@ public class DataService {
     public DataModel postData(DataModel data){
         return dataRepo.save(data);
     }
+    public List<DataModel> getDataByUserId(){
+        return dataRepo.getByUserId();
+    }
+
+    public void deleteUser(int userId) {
+        dataRepo.deleteById(userId);
+    }
 
     public DataModel saveDataWithImages(DataModel dataModel) {
+        UserModel user = userRepo.findById(dataModel.getUser().getUserId())
+        .orElseThrow(() -> new Error("User not found"));
+
+        // Associate the user with the form data
+        dataModel.setUser(user);
+
         ImageModel imageModel = dataModel.getImage();
         if (imageModel != null) {
             ImageModel savedImage = imageRepo.save(imageModel);

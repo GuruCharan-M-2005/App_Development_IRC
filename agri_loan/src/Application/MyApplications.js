@@ -3,62 +3,31 @@ import Navbar from '../Navbar/Navbbar';
 import Footer from '../Footer/Footer';
 import './MyApplications.css';
 import { TbReportSearch } from "react-icons/tb";
+import axios from 'axios';
 
 const MyApplications = () => {
   const [applications, setApplications] = useState([]);
   const [loggedInUserId, setLoggedInUserId] = useState(null);
 
   useEffect(() => {
-   
     const fetchLoggedInUserId = async () => {
       try {
-        const response = await fetch('http://localhost:3008/users');
-        if (!response.ok) {
-          throw new Error('Network response was not ok.');
-        }
-        const users = await response.json();
-        const loggedInUser = users.find(users => users.islogin === 1);
-        if (loggedInUser) {
-          setLoggedInUserId(loggedInUser.id);
-        }
+        const response2 = await axios.get(`http://localhost:8080/data/getallbyuser`);
+        console.log(response2.data);
+        setApplications(response2.data);
       } catch (error) {
         console.error('Error fetching logged-in user:', error);
       }
     };
-
+  
     fetchLoggedInUserId();
   }, []);
-  useEffect(() => {
-    window.scrollTo(0, 0); // Scroll to the top of the page
-  }, []); 
 
-  useEffect(() => {
-    const fetchApplications = async () => {
-      try {
-        const response = await fetch('http://localhost:4000/applications');
-        if (!response.ok) {
-          throw new Error('Network response was not ok.');
-        }
-        const data = await response.json();
-        
-     
-        if (loggedInUserId) {
-          const filteredApplications = data.filter(app => app.userId === loggedInUserId);
-          setApplications(filteredApplications);
-        } else {
-          setApplications([]);
-        }
-      } catch (error) {
-        console.error('Error fetching applications:', error);
-      }
-    };
 
-    fetchApplications();
-  }, [loggedInUserId]);
 
   const handleDelete = async (id) => {
     try {
-      const response = await fetch(`http://localhost:4000/applications/${id}`, {
+      const response = await fetch(`http://localhost:8080/data/${id}`, {
         method: 'DELETE',
       });
       if (!response.ok) {
@@ -132,7 +101,7 @@ const MyApplications = () => {
                   <div className='para-bg'><p><strong>Account Number:</strong> {maskAccountNumber(app.accountNumber)}</p></div>
                   <div><p><strong>Date Applied:</strong> {formatDate(app.submittedAt)}</p></div>
                   <div className='application-button-container'>
-                    <button className='delete-button' onClick={() => handleDelete(app.id)}>Delete</button>
+                    <button className='delete-button' onClick={() => handleDelete(app.dataId)}>Delete</button>
                     {getStatusButton(app.status)}
                   </div>
                 </div>

@@ -66,30 +66,33 @@ const Loginpg = () => {
   
     try {
       // Fetch users and reset islogin
-      const response = await axios.get('http://localhost:3008/users');
-      const users = response.data;
-  
+      // Ensure the endpoint for fetching all users exists in your Spring Boot controller
+      // const response = await axios.get('http://localhost:8080/user'); // Placeholder; adjust based on actual endpoint
+      // const users = response.data;
+    
       // Reset islogin to 0 for all users
-      await Promise.all(users.map(users =>
-        axios.patch(`http://localhost:3008/users/${users.id}`, { islogin: 0 })
-      ));
-  
+      // await Promise.all(users.map(user =>
+      //   axios.put(`http://localhost:8080/user/updateLoginStatus/${user.id}`, { islogin: 0 })
+      // ));
+    
       // Fetch the current user
-      const userResponse = await axios.get(`http://localhost:3008/users?email=${email}&password=${password}`);
-      if (userResponse.data.length > 0) {
-        const users = userResponse.data[0]; // Assume the user is the first result
-        const userId = users.id;
-  
+      const userResponse = await axios.get(`http://localhost:8080/user/isUserPresent/${email}/${password}`);
+      if (userResponse.data) {
+        const user = userResponse.data;
+        const userId = user.userId;
+    
         // Set islogin to 1 for the current user
-        await axios.patch(`http://localhost:3008/users/${userId}`, { islogin: 1 });
-  
+        await axios.put(`http://localhost:8080/user/updateLoginStatus/${userId}`, { islogin: 1 });
+    
         navigate("/");
       } else {
         alert("User account doesn't exist");
       }
     } catch (error) {
-      console.error("Error during login process:", error);
+      console.error("An error occurred:", error);
+      alert("An error occurred while processing your request.");
     }
+    
   };
   
   const handleLogin = () => {

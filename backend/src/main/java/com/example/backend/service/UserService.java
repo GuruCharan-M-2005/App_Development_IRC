@@ -3,6 +3,10 @@ package com.example.backend.service;
 import com.example.backend.model.UserModel;
 // import com.example.backend.model.LoginModel;
 import com.example.backend.repository.UserRepo;
+
+// import java.util.Collections;
+// import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,9 +16,9 @@ public class UserService {
     @Autowired
     private UserRepo userRepository;
 
-    public UserModel isUserPresent(UserModel data) {
-        UserModel user = userRepository.findByEmail(data.getEmail());
-        if(user != null && user.getPassword().equals(data.getPassword())){
+    public UserModel isUserPresent(String data,String pass) {
+        UserModel user = userRepository.findByEmail(data);
+        if(user != null && user.getPassword().equals(pass)){
             return user;
         }
         return null;
@@ -56,5 +60,16 @@ public class UserService {
             return false;
         }
     }
+
+    // public UserModel getUsers(String username, String email, String phonenumber) {
+    //     if (username != null) {
+    //         return userRepository.findByUsername(username);
+    //     } else if (email != null) {
+    //         return userRepository.findByEmail(email);
+    //     } else if (phonenumber != null) {
+    //         return userRepository.findByPhonenumber(phonenumber);
+    //     }
+    //     return null;
+    // }
     
 }

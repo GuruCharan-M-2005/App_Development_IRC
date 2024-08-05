@@ -48,10 +48,12 @@ const LoanApplicationForm = () => {
   useEffect(() => {
     const fetchUserId = async () => {
       try {
-        const response = await fetch('http://localhost:3006/users/1'); // Adjust URL as needed
+        const response = await fetch('http://localhost:8080/user/loggedin'); // Adjust URL as needed
         if (response.ok) {
           const users = await response.json();
-          setUserId(users.id); // Assuming user object has an id field
+          // console.log(users)
+          setUserId(users.userId); // Assuming user object has an id field
+          setFormData(prevData => ({ ...prevData, userId: userId }));
         } else {
           console.error('Failed to fetch user ID');
         }
@@ -162,7 +164,59 @@ const LoanApplicationForm = () => {
     const dataToSubmit = { ...formData, submittedAt: submissionTime };
   
     try {
-      const response = await fetch('http://localhost:4000/applications', {
+
+      const readFileAsBase64 = (file) => {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            resolve(reader.result.split(',')[1]); // Remove the data URL part
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+      };
+
+      const photoUploadBase64 = await readFileAsBase64(formData.photoUpload);
+      const aadharUploadBase64 = await readFileAsBase64(formData.aadharUpload);
+      const landCertificateUploadBase64 = await readFileAsBase64(formData.landCertificateUpload);
+  
+
+      const dataToSubmit = {
+        loanAmount: formData.loanAmount,
+        annualIncome: formData.annualIncome,
+        loanType: formData.loanType,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        birthDate: formData.birthDate,
+        email: formData.email,
+        phone: formData.phone,
+        addressLine1: formData.addressLine1,
+        addressLine2: formData.addressLine2,
+        city: formData.city,
+        state: formData.state,
+        postalCode: formData.postalCode,
+        addressDuration: formData.addressDuration,
+        occupation: formData.occupation,
+        monthlyIncome: formData.monthlyIncome,
+        bankName: formData.bankName,
+        accountNumber: formData.accountNumber,
+        bankPhone: formData.bankPhone,
+        authorizeConsent: formData.authorizeConsent,
+        agreeStatement: formData.agreeStatement,
+        submittedAt: submissionTime,
+        image: {
+          photoUpload: photoUploadBase64,
+          aadharUpload: aadharUploadBase64,
+          landCertificateUpload: landCertificateUploadBase64,
+        },
+        user:{
+          userId:userId
+        }
+      };
+
+      console.log(dataToSubmit);
+
+      const response = await fetch(`http://localhost:8080/data/post`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

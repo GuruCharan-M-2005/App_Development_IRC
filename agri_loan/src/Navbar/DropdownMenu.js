@@ -20,15 +20,15 @@ const DropdownMenu = ({ isLoggedIn, handleLogin, handleLogout }) => {
   const [username, setUsername] = useState('');
   const navigate = useNavigate();
 
-  useEffect(() => {
+  useEffect(  () => {
     if (isLoggedIn) {
     
-      axios.get('http://localhost:3008/users')
+       axios.get('http://localhost:8080/user/loggedin')
         .then(response => {
-          const users = response.data.find(users => users.islogin === 1);
-          if (users) {
-            setUsername(users.username);
-          }
+          // const users = response.data.find(users => users.islogin === 1);
+          // if (users) {
+            setUsername(response.data.username);
+          // }
         })
         .catch(error => {
           console.error('Error fetching user data:', error);

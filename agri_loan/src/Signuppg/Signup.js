@@ -21,79 +21,77 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
   const [showSuccessImage, setShowSuccessImage] = useState(false);
 
-  const generateUniqueUserId = async () => {
-    let isUnique = false;
-    let userId;
+  // const generateUniqueUserId = async () => {
+  //   let isUnique = false;
+  //   let userId;
   
-    while (!isUnique) {
-      userId = Math.floor(100000 + Math.random() * 900000).toString();
-      const response = await axios.get(`http://localhost:3008/users?id=${userId}`);
-      isUnique = response.data.length === 0;
-    }
+  //   while (!isUnique) {
+  //     userId = Math.floor(100000 + Math.random() * 900000).toString();
+  //     const response = await axios.get(`http://localhost:8080/users/${userId}`);
+  //     isUnique = response.data.length === 0;
+  //   }
   
-    return userId;
-  };
+  //   return userId;
+  // };
   
-
   const handleRegister = async () => {
     try {
       setLoading(true);
       setMessage('');
-
+  
       if (!username || !email || !password || !phonenumber || !confirmPassword) {
         setMessage('Please fill in all fields');
         setLoading(false);
         return;
       }
-
+  
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
         setMessage('Please provide a valid email address');
         setLoading(false);
         return;
       }
-
+  
       if (password !== confirmPassword) {
         setMessage('Passwords do not match');
         setLoading(false);
         return;
       }
-
+  
       if (!/^\d{10}$/.test(phonenumber)) {
         setMessage('Phone number must be 10 digits');
         setLoading(false);
         return;
       }
-
-      const response = await axios.get(`http://localhost:3008/users?username=${username}&email=${email}&phonenumber=${phonenumber}`);
-      const existingUser = response.data[0];
-
-      if (existingUser) {
+  
+      const response = await axios.get(`http://localhost:8080/user/isUserPresentByEmail?email=${email}`);
+      // const existingUser = response.data[0];
+  
+      if (!response) {
         setMessage('Account already exists');
         setLoading(false);
         return;
       }
-
-      const userId = await generateUniqueUserId();
+  
+      // const userId = await generateUniqueUserId();
       const currentDate = new Date();
       const dateOfJoining = currentDate.toISOString().split('T')[0]; // yyyy-mm-dd format
       const timeOfJoining = currentDate.toTimeString().split(' ')[0]; // hh:mm:ss format
-
-      const registerResponse = await axios.post('http://localhost:3008/users', {
-        id: userId,
+  
+      const registerResponse = await axios.post('http://localhost:8080/user/addUser', {
         username,
         email,
         password,
-        phonenumber,
+        mobileNumber:phonenumber,
         dateOfJoining,
         timeOfJoining
       });
-
+  
       console.log('Registration successful:', registerResponse.data);
       setMessage('Account created successfully');
       setLoading(false);
       setShowSuccessImage(true);
-
+  
       setTimeout(() => {
         setShowSuccessImage(false);
         navigate('/user/login');

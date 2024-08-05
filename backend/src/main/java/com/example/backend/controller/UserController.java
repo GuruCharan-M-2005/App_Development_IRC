@@ -2,6 +2,9 @@ package com.example.backend.controller;
 
 import com.example.backend.model.UserModel;
 import com.example.backend.service.UserService;
+
+// import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +25,7 @@ public class UserController {
         return ResponseEntity.ok(addedUser);
     }
 
-    @GetMapping("/getUser/{userId}")
+    @GetMapping("/{userId}")
     public ResponseEntity<UserModel> getUser(@PathVariable int userId) {
         UserModel user = userService.getUser(userId);
         return ResponseEntity.ok(user);
@@ -40,9 +43,9 @@ public class UserController {
         return ResponseEntity.ok("User deleted successfully.");
     }
 
-    @PostMapping("/isUserPresent")
-    public ResponseEntity<UserModel> isUserPresent(@RequestBody UserModel data) {
-        UserModel isPresent = userService.isUserPresent(data);
+    @GetMapping("/isUserPresent/{email}/{pass}")
+    public ResponseEntity<UserModel> isUserPresent(@PathVariable String email,@PathVariable String pass) {
+        UserModel isPresent = userService.isUserPresent(email,pass);
         return ResponseEntity.ok(isPresent);
     }
 

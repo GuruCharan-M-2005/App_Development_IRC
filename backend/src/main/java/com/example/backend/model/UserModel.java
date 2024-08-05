@@ -1,5 +1,7 @@
 package com.example.backend.model;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Value;
 
 import jakarta.persistence.*;
@@ -15,7 +17,12 @@ public class UserModel {
     private String password;
     private String username;
     private String mobileNumber;
-    private String userRole;
     @Value("${islogin:0}")
     private int islogin;
+
+    private String dateOfJoining;
+    private String timeOfJoining;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DataModel> dataModels;
 }
