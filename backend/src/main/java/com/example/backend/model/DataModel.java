@@ -1,18 +1,9 @@
 package com.example.backend.model;
+
 import jakarta.persistence.*;
 import lombok.Data;
-
-// import java.sql.Blob;
 import java.time.LocalDateTime;
-
 import org.springframework.beans.factory.annotation.Value;
-
-// import com.fasterxml.jackson.annotation.JsonIgnore;
-// import com.fasterxml.jackson.annotation.JsonManagedReference;
-// import com.fasterxml.jackson.annotation.JsonManagedReference;
-
-// import com.example.backend.model.ImageModel;
-
 
 @Entity
 @Data
@@ -55,17 +46,8 @@ public class DataModel {
     // @JoinColumn(name = "image_id", referencedColumnName = "id")
     // private ImageModel image;
 
-
-    // private int userId;
-
     @ManyToOne
     @JoinColumn(name = "user_id")
-    // @JsonIgnore
-    // @JsonManagedReference
-
-    // @JsonIgnore
-    // @OneToOne
-    // @JoinColumn(name = "user_id")
     private UserModel user;
     
 }

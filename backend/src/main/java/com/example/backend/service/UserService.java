@@ -1,17 +1,9 @@
 package com.example.backend.service;
 
 import com.example.backend.model.UserModel;
-// import com.example.backend.model.LoginModel;
 import com.example.backend.repository.UserRepo;
-
 import java.util.List;
-
-// import java.util.Collections;
-// import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.http.ResponseEntity;
-// import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,6 +12,7 @@ public class UserService {
     @Autowired
     private UserRepo userRepository;
     
+
     public List<UserModel> getalldata() {
         return userRepository.findAll();
     }
@@ -31,30 +24,7 @@ public class UserService {
         }
         return null;
     }
-
-    public UserModel addUser(UserModel user) {
-        return userRepository.save(user);
-    }
-
-    public UserModel getUser(int userId) {
-        return userRepository.findById(userId).orElse(null);
-    }
-
-    public UserModel editUser(int userId, UserModel user) {
-        user.setUserId(userId);
-        return userRepository.save(user);
-    }
-
-    public void deleteUser(int userId) {
-        userRepository.deleteById(userId);
-    }
-
-    public UserModel updateLoginStatus(int userId, UserModel user) {
-        UserModel existingUser = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-        existingUser.setIslogin(user.getIslogin());
-        return userRepository.save(existingUser);
-    }
-
+    
     public UserModel findByIslogin(){
         return userRepository.findByIslogin();
     }
@@ -69,10 +39,37 @@ public class UserService {
         }
     }
 
-
     public List<UserModel> getallUserdataOnly() {
         List<UserModel> temp=userRepository.findAll();
         return temp;
     }
+
+    public UserModel getUser(int userId) {
+        return userRepository.findById(userId).orElse(null);
+    }
+
+
+    public UserModel addUser(UserModel user) {
+        return userRepository.save(user);
+    }
+
+
+    public UserModel editUser(int userId, UserModel user) {
+        user.setUserId(userId);
+        return userRepository.save(user);
+    }
+
+    public UserModel updateLoginStatus(int userId, UserModel user) {
+        UserModel existingUser = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        existingUser.setIslogin(user.getIslogin());
+        return userRepository.save(existingUser);
+    }
+
+
+    public void deleteUser(int userId) {
+        userRepository.deleteById(userId);
+    }
+
+
     
 }
