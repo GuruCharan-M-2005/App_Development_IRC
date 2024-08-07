@@ -13,21 +13,15 @@ import org.springframework.data.repository.query.Param;
 public interface UserRepo  extends JpaRepository<UserModel, Integer> {
 
    @Query("SELECT u FROM UserModel u WHERE u.email = :email")
-    UserModel findByEmail(@Param("email") String email);
+    public UserModel findByEmail(@Param("email") String email);
 
     @Query("SELECT u FROM UserModel u WHERE u.islogin = 1")
-    UserModel findByIslogin();
+    public UserModel findByIslogin();
 
-    // @Query("SELECT u FROM UserModel u WHERE u.islogin = 1")
-    // UserModel findByEmail(String email);
-    
-     // Find a user by username
      @Query("SELECT u FROM UserModel u WHERE u.username = :username")
-     UserModel findByUsername(String username);
+     public UserModel findByUsername(String username);
     
-     
-     // Find a user by phone number
      @Query("SELECT u FROM UserModel u WHERE u.mobileNumber = :phonenumber")
-     UserModel findByPhonenumber(String phonenumber);
+     public UserModel findByPhonenumber(String phonenumber);
      
 }

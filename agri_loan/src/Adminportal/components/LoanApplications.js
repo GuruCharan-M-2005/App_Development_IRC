@@ -20,7 +20,7 @@ const LoanApplications = () => {
   useEffect(() => {
     const fetchLoanData = async () => {
       try {
-        const response = await axios.get('http://localhost:4000/applications');
+        const response = await axios.get('http://localhost:8080/data/getall');
         setLoanData(response.data);
         setFilteredData(response.data);
         setLoading(false);
@@ -38,13 +38,13 @@ const LoanApplications = () => {
     let filtered = loanData;
     switch (category) {
       case 'Approved':
-        filtered = loanData.filter(app => app.status === 'Approved');
+        filtered = loanData.filter(app => app.loanStatus === 'Approved');
         break;
       case 'Rejected':
-        filtered = loanData.filter(app => app.status === 'Rejected');
+        filtered = loanData.filter(app => app.loanStatus === 'Rejected');
         break;
       case 'Yet to Review':
-        filtered = loanData.filter(app => app.status === 'Yet to Review');
+        filtered = loanData.filter(app => app.loanStatus === 'Yet to Review');
         break;
       case 'All':
       default:
@@ -77,25 +77,28 @@ const LoanApplications = () => {
 
   const handleStatusChange = async (applicationId, newStatus) => {
     try {
-      const response = await fetch(`http://localhost:4000/applications/${applicationId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ status: newStatus }),
-      });
+      const response = await axios.put(`http://localhost:8080/data/editDataLoanStatus/${applicationId}/${newStatus}`);
+        // method: 'PATCH',
+        // headers: {
+        //   'Content-Type': 'application/json',
+        // },
+        // body: JSON.stringify({ loanStatus: newStatus }),
+      // });
 
-      if (!response.ok) {
+      if (response.ok) {
+        setLoanData(prevData => prevData.map(app =>
+          app.id === applicationId ? { ...app, status: newStatus } : app
+        ));
+        setFilteredData(prevData => prevData.map(app =>
+          app.id === applicationId ? { ...app, status: newStatus } : app
+        ));
+      }
+      else{
+
         throw new Error('Network response was not ok.');
       }
 
       // Update local state
-      setLoanData(prevData => prevData.map(app =>
-        app.id === applicationId ? { ...app, status: newStatus } : app
-      ));
-      setFilteredData(prevData => prevData.map(app =>
-        app.id === applicationId ? { ...app, status: newStatus } : app
-      ));
     } catch (error) {
       console.error('Error updating application status:', error);
     }
@@ -115,7 +118,7 @@ const LoanApplications = () => {
 
   const handleRefresh = async (id) => {
     try {
-      const response = await axios.get(`http://localhost:4000/applications/${id}`);
+      const response = await axios.get(`http://localhost:8080/data/getbyid/${id}`);
       const updatedApplication = response.data;
       setLoanData(prevData => prevData.map(app => app.id === id ? updatedApplication : app));
       setFilteredData(prevData => prevData.map(app => app.id === id ? updatedApplication : app));
@@ -190,15 +193,15 @@ const LoanApplications = () => {
             </div>
             <div className="card card-approved" onClick={() => filterApplications('Approved')}>
               <h3>Approved Applications</h3>
-              <p>{loanData.filter(app => app.status === 'Approved').length}</p>
+              <p>{loanData.filter(app => app.loanStatus === 'Approved').length}</p>
             </div>
             <div className="card card-rejected" onClick={() => filterApplications('Rejected')}>
               <h3>Rejected Applications</h3>
-              <p>{loanData.filter(app => app.status === 'Rejected').length}</p>
+              <p>{loanData.filter(app => app.loanStatus === 'Rejected').length}</p>
             </div>
             <div className="card" onClick={() => filterApplications('Yet to Review')}>
               <h3>Yet to Review</h3>
-              <p>{loanData.filter(app => app.status === 'Yet to Review').length}</p>
+              <p>{loanData.filter(app => app.loanStatus === 'Yet to Review').length}</p>
             </div>
           </div>
           <div className='print-function'>
@@ -229,7 +232,7 @@ const LoanApplications = () => {
                   <td>{loan.loanAmount}</td>
                   <td>{loan.loanType}</td>
                   <td>{new Date(loan.submittedAt).toLocaleDateString()}</td>
-                  <td>{loan.status}</td>
+                  <td>{loan.loanStatus}</td>
                   <td>
                     <button className="view-btn" onClick={() => handleViewClick(loan)}>View</button>
                   </td>

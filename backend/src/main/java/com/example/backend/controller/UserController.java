@@ -3,6 +3,8 @@ package com.example.backend.controller;
 import com.example.backend.model.UserModel;
 import com.example.backend.service.UserService;
 
+import java.util.List;
+
 // import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,16 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @GetMapping("/getall")
+    public ResponseEntity<List<UserModel>> getAllData(){
+        return ResponseEntity.ok(userService.getalldata());
+    }
+
+    @GetMapping("/getalluseronly")
+    public ResponseEntity<List<UserModel>> getAllDataUser(){
+        return ResponseEntity.ok(userService.getallUserdataOnly());
+    }
 
     @PostMapping("/addUser")
     public ResponseEntity<UserModel> addUser(@RequestBody UserModel user) {
@@ -43,9 +55,10 @@ public class UserController {
         return ResponseEntity.ok("User deleted successfully.");
     }
 
-    @GetMapping("/isUserPresent/{email}/{pass}")
-    public ResponseEntity<UserModel> isUserPresent(@PathVariable String email,@PathVariable String pass) {
-        UserModel isPresent = userService.isUserPresent(email,pass);
+    @GetMapping("/isUserPresent/{email}/{password}")
+    public ResponseEntity<UserModel> isUserPresent(@PathVariable String email,@PathVariable String password) {
+        UserModel isPresent = userService.isUserPresent(email,password);
+        // isPresent.setDataModels(null);
         return ResponseEntity.ok(isPresent);
     }
 

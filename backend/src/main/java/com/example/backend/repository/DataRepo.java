@@ -10,7 +10,15 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface DataRepo extends JpaRepository<DataModel,Integer> {
 
-    @Query("SELECT u from DataModel u where u.user.userId in (SELECT i.userId FROM UserModel i WHERE i.islogin = 1)")
+
+    // @Query("SELECT d FROM DataModel d JOIN UserModel u WHERE u.userId=d.userId and u.islogin = 1")
+    // @Query("SELECT d FROM DataModel d JOIN d.user u WHERE u.islogin = 1")
+    // @Query("SELECT d FROM DataModel d WHERE d.user.islogin = 1")
+    // @Query("SELECT d FROM DataModel d WHERE d.user.islogin = 1")
+    // @Query("SELECT d FROM DataModel d JOIN d.user u WHERE u.islogin = 1")
+
+    @Query("SELECT d FROM DataModel d WHERE d.user.islogin = 1")
     public List<DataModel> getByUserId();
+
 
 }

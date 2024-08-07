@@ -4,6 +4,7 @@ import Navbar from '../Navbar/Navbbar';
 import Footer from '../Footer/Footer';
 import SubmissionAnimationPage from './SubmissionAnimationPage';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const LoanApplicationForm = () => {
   const [step, setStep] = useState(1);
@@ -48,15 +49,18 @@ const LoanApplicationForm = () => {
   useEffect(() => {
     const fetchUserId = async () => {
       try {
-        const response = await fetch('http://localhost:8080/user/loggedin'); // Adjust URL as needed
-        if (response.ok) {
-          const users = await response.json();
-          // console.log(users)
-          setUserId(users.userId); // Assuming user object has an id field
-          setFormData(prevData => ({ ...prevData, userId: userId }));
-        } else {
-          console.error('Failed to fetch user ID');
-        }
+        setTimeout(async () => {
+          const response = await axios.get('http://localhost:8080/user/loggedin'); // Adjust URL as needed
+          if (response.data) {
+            const users = response.data;
+            // console.log(users)
+            setUserId(users.userId); // Assuming user object has an id field
+            setFormData(prevData => ({ ...prevData, userId: userId }));
+          } else {
+            console.error('Failed to fetch user ID');
+          }
+          
+        }, 100);
       } catch (error) {
         console.error('Error fetching user ID:', error);
       }
@@ -93,6 +97,11 @@ const LoanApplicationForm = () => {
 
     if (!formData.bankName) errors.bankName = 'Bank name is required';
     if (!formData.accountNumber) errors.accountNumber = 'Account number is required';
+    if (!formData.cibilScore) errors.cibilScore = 'Cibil Score is required';
+    if (formData.cibilScore < 0 || formData.cibilScore > 10) {
+      errors.cibilScore = 'CIBIL Score must be between 0 and 10';
+    }
+  
     if (!formData.bankPhone || !/^[6-9]\d{9}$/.test(formData.bankPhone)) errors.bankPhone = 'Valid 10-digit Indian phone number is required';
     
     setErrors(errors);
@@ -165,20 +174,20 @@ const LoanApplicationForm = () => {
   
     try {
 
-      const readFileAsBase64 = (file) => {
-        return new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            resolve(reader.result.split(',')[1]); // Remove the data URL part
-          };
-          reader.onerror = reject;
-          reader.readAsDataURL(file);
-        });
-      };
+      // const readFileAsBase64 = (file) => {
+      //   return new Promise((resolve, reject) => {
+      //     const reader = new FileReader();
+      //     reader.onloadend = () => {
+      //       resolve(reader.result.split(',')[1]); // Remove the data URL part
+      //     };
+      //     reader.onerror = reject;
+      //     reader.readAsDataURL(file);
+      //   });
+      // };
 
-      const photoUploadBase64 = await readFileAsBase64(formData.photoUpload);
-      const aadharUploadBase64 = await readFileAsBase64(formData.aadharUpload);
-      const landCertificateUploadBase64 = await readFileAsBase64(formData.landCertificateUpload);
+      // const photoUploadBase64 = await readFileAsBase64(formData.photoUpload);
+      // const aadharUploadBase64 = await readFileAsBase64(formData.aadharUpload);
+      // const landCertificateUploadBase64 = await readFileAsBase64(formData.landCertificateUpload);
   
 
       const dataToSubmit = {
@@ -200,15 +209,11 @@ const LoanApplicationForm = () => {
         monthlyIncome: formData.monthlyIncome,
         bankName: formData.bankName,
         accountNumber: formData.accountNumber,
+        cibilScore: formData.cibilScore,
         bankPhone: formData.bankPhone,
         authorizeConsent: formData.authorizeConsent,
         agreeStatement: formData.agreeStatement,
         submittedAt: submissionTime,
-        image: {
-          photoUpload: photoUploadBase64,
-          aadharUpload: aadharUploadBase64,
-          landCertificateUpload: landCertificateUploadBase64,
-        },
         user:{
           userId:userId
         }
@@ -216,23 +221,24 @@ const LoanApplicationForm = () => {
 
       console.log(dataToSubmit);
 
-      const response = await fetch(`http://localhost:8080/data/post`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(dataToSubmit),
-      });
+      const response = await axios.post(`http://localhost:8080/data/post`,dataToSubmit);
+      console.log(response.data)
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: dataToSubmit,
+      // });
   
-      if (!response.ok) {
-        throw new Error('Network response was not ok.');
-      }
+      // if (!response.ok) {
+      //   throw new Error('Network response was not ok.');
+      // }
 
       setShowAnimation(true);
 
       setTimeout(() => {
-        setShowAnimation(false);
         navigate('/my-applications');
+        setShowAnimation(false);
         
       }, 4000);
   
@@ -255,6 +261,7 @@ const LoanApplicationForm = () => {
         monthlyIncome: '',
         bankName: '',
         accountNumber: '',
+        cibilScore:'',
         bankPhone: '',
         authorizeConsent: false,
         agreeStatement: false,
@@ -554,6 +561,17 @@ const LoanApplicationForm = () => {
                   required
                 />
                 {errors.accountNumber && <p className="error">{errors.accountNumber}</p>}
+              </label>
+              <label>
+                Cibil Score:
+                <input
+                  type="text"
+                  name="cibilScore"
+                  value={formData.cibilScore}
+                  onChange={handleChange}
+                  required
+                />
+                {errors.cibilScore && <p className="error">{errors.cibilScore}</p>}
               </label>
               <label>
                 Bank Phone:

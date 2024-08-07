@@ -3,6 +3,7 @@ import './Users.css';
 import Sidebar from './Sidebar';
 import ConfirmationModal from './ConfirmationModal';
 import AdminNavbar from './AdminNavbar';
+import axios from 'axios';
 
 const Users = () => {
   const [users, setUsers] = useState([]);
@@ -14,12 +15,20 @@ const Users = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch('http://localhost:3008/users');
-        if (!response.ok) {
+        const response = await axios.get('http://localhost:8080/user/getalluseronly');
+        if (response.data) {
+          const data = response.data;
+          console.log(data);
+          if (Array.isArray(data)) {
+            setUsers(data);
+          } else {
+            console.error('Data is not an array', data);
+          }
+        }
+        else{
+
           throw new Error('Network response was not ok.');
         }
-        const data = await response.json();
-        setUsers(data);
       } catch (error) {
         console.error('Error fetching users:', error);
       }
@@ -27,12 +36,15 @@ const Users = () => {
 
     const fetchApplications = async () => {
       try {
-        const response = await fetch('http://localhost:4000/applications');
-        if (!response.ok) {
-          throw new Error('Network response was not ok.');
+        const response = await axios.get('http://localhost:8080/data/getall');
+        if (response.data) {
+          const data = response.data;
+          setApplications(data);
         }
-        const data = await response.json();
-        setApplications(data);
+        else{
+          throw new Error('Network response was not ok.');
+
+        }
       } catch (error) {
         console.error('Error fetching applications:', error);
       }
@@ -45,15 +57,18 @@ const Users = () => {
   const handleDelete = async () => {
     try {
       if (userToDelete) {
-        const response = await fetch(`http://localhost:3008/users/${userToDelete}`, {
+        const response = await fetch(`http://localhost:8080/user/deleteUser/${userToDelete}`, {
           method: 'DELETE',
         });
-        if (!response.ok) {
+        if (response.ok) {
+          setUsers(users.filter(users => users.id !== userToDelete));
+          setUserToDelete(null);
+          setShowConfirmModal(false);
+        }
+        else{
+          
           throw new Error('Network response was not ok.');
         }
-        setUsers(users.filter(users => users.id !== userToDelete));
-        setUserToDelete(null);
-        setShowConfirmModal(false);
       }
     } catch (error) {
       console.error('Error deleting user:', error);
@@ -79,11 +94,11 @@ const Users = () => {
 
   const fetchUserApplications = async (userId) => {
     try {
-      const response = await fetch(`http://localhost:4000/applications?userId=${userId}`);
+      const response = await fetch(`http://localhost:8080/data/getbyid/${userId}`);
       if (!response.ok) {
         throw new Error('Network response was not ok.');
       }
-      const data = await response.json();
+      const data = await response.data;
       setSelectedUserApplications(data);
     } catch (error) {
       console.error('Error fetching user applications:', error);
@@ -132,13 +147,13 @@ const Users = () => {
           <h3>Total Users: {users.length}</h3>
         </div>
         <div className='user-cards-container'>
-          {users.map(user => (
+          {users.map((user) => (
             <div className='user-card' key={user.id}>
               <div className='user-card-header'>
                 {/* <img src={user.avatar || 'default-avatar.png'} alt='User Avatar' /> */}
                 <h4>{user.username}</h4>
               </div>
-              <p><strong>User Id:</strong> {user.id}</p>
+              <p><strong>User Id:</strong> {user.userId}</p>
               <p><strong>Username:</strong> {user.username}</p>
               <p><strong>Phone Number:</strong> {user.phonenumber}</p>
               <p><strong>Email:</strong> {user.email}</p>
@@ -150,7 +165,7 @@ const Users = () => {
               </p>
               <div className='button-container'>
                 <button className='button-edit'>Edit</button>
-                <button className='button-delete-user' onClick={() => openConfirmModal(user.id)}>Delete</button>
+                <button className='button-delete-user' onClick={() => openConfirmModal(user.userId)}>Delete</button>
               </div>
             </div>
           ))}

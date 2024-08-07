@@ -5,6 +5,12 @@ import lombok.Data;
 // import java.sql.Blob;
 import java.time.LocalDateTime;
 
+import org.springframework.beans.factory.annotation.Value;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+// import com.fasterxml.jackson.annotation.JsonManagedReference;
+// import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 // import com.example.backend.model.ImageModel;
 
 
@@ -33,22 +39,33 @@ public class DataModel {
     private String monthlyIncome;
     private String bankName;
     private String accountNumber;
+    private String cibilScore;
     private String bankPhone;
     private Boolean authorizeConsent;
     private Boolean agreeStatement;
 
 
-
-    private int loanStatus;
+    @Value("${loanStatus:Yet to Review}")
+    private String loanStatus;
     private LocalDateTime submittedAt;
     private LocalDateTime RepaymentDate;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "image_id", referencedColumnName = "id")
-    private ImageModel image;
+    // UNCOMMENT TO CONNECT WITH IMAGE TABLE
+    // @OneToOne(cascade = CascadeType.ALL)
+    // @JoinColumn(name = "image_id", referencedColumnName = "id")
+    // private ImageModel image;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+
+    // private int userId;
+
+    @ManyToOne
     @JoinColumn(name = "user_id")
+    // @JsonIgnore
+    // @JsonManagedReference
+
+    // @JsonIgnore
+    // @OneToOne
+    // @JoinColumn(name = "user_id")
     private UserModel user;
     
 }

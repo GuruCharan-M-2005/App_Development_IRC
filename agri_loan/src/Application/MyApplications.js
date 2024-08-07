@@ -3,37 +3,42 @@ import Navbar from '../Navbar/Navbbar';
 import Footer from '../Footer/Footer';
 import './MyApplications.css';
 import { TbReportSearch } from "react-icons/tb";
-import axios from 'axios';
+import axios, { Axios } from 'axios';
 
 const MyApplications = () => {
   const [applications, setApplications] = useState([]);
   const [loggedInUserId, setLoggedInUserId] = useState(null);
 
-  useEffect(() => {
-    const fetchLoggedInUserId = async () => {
-      try {
+  const fetchLoggedInUserId = async () => {
+    try {
         const response2 = await axios.get(`http://localhost:8080/data/getallbyuser`);
-        console.log(response2.data);
         setApplications(response2.data);
+        console.log(response2.data);
+        
       } catch (error) {
         console.error('Error fetching logged-in user:', error);
       }
     };
-  
-    fetchLoggedInUserId();
-  }, []);
+    
+  useEffect(() => {
+      // fetchLoggedInUserId();
+      // setTimeout( () => {
+        fetchLoggedInUserId();
+    // }, 500);
+    }, []);
 
 
 
   const handleDelete = async (id) => {
     try {
-      const response = await fetch(`http://localhost:8080/data/${id}`, {
-        method: 'DELETE',
-      });
-      if (!response.ok) {
-        throw new Error('Network response was not ok.');
-      }
-      setApplications(applications.filter(app => app.id !== id));
+      setTimeout(async () => {
+        const response = await axios.delete(`http://localhost:8080/data/${id}`);
+        if (!response.ok) {
+          throw new Error('Network response was not ok.');
+        }
+        // setApplications(applications.filter(app => app.id !== id));
+        
+      }, 100);
     } catch (error) {
       console.error('Error deleting application:', error);
     }

@@ -4,17 +4,25 @@ import com.example.backend.model.UserModel;
 // import com.example.backend.model.LoginModel;
 import com.example.backend.repository.UserRepo;
 
+import java.util.List;
+
 // import java.util.Collections;
 // import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+// import org.springframework.http.ResponseEntity;
+// import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
-
+    
     @Autowired
     private UserRepo userRepository;
+    
+    public List<UserModel> getalldata() {
+        return userRepository.findAll();
+    }
 
     public UserModel isUserPresent(String data,String pass) {
         UserModel user = userRepository.findByEmail(data);
@@ -61,15 +69,10 @@ public class UserService {
         }
     }
 
-    // public UserModel getUsers(String username, String email, String phonenumber) {
-    //     if (username != null) {
-    //         return userRepository.findByUsername(username);
-    //     } else if (email != null) {
-    //         return userRepository.findByEmail(email);
-    //     } else if (phonenumber != null) {
-    //         return userRepository.findByPhonenumber(phonenumber);
-    //     }
-    //     return null;
-    // }
+
+    public List<UserModel> getallUserdataOnly() {
+        List<UserModel> temp=userRepository.findAll();
+        return temp;
+    }
     
 }

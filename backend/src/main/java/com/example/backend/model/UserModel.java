@@ -2,7 +2,17 @@ package com.example.backend.model;
 
 import java.util.List;
 
+// import java.util.List;
+
+// import java.util.List;
+
 import org.springframework.beans.factory.annotation.Value;
+
+// import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+// import com.fasterxml.jackson.annotation.JsonBackReference;
+// import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -23,6 +33,11 @@ public class UserModel {
     private String dateOfJoining;
     private String timeOfJoining;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    // @JsonBackReference
+    @JsonIgnore
     private List<DataModel> dataModels;
+
+    // @OneToOne(mappedBy = "user")
+    // private DataModel dataModel;
 }

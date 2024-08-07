@@ -3,13 +3,14 @@ package com.example.backend.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+// import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties.Data;
 import org.springframework.stereotype.Service;
 
 import com.example.backend.model.DataModel;
-import com.example.backend.model.ImageModel;
+// import com.example.backend.model.ImageModel;
 import com.example.backend.model.UserModel;
 import com.example.backend.repository.DataRepo;
-import com.example.backend.repository.ImageRepo;
+// import com.example.backend.repository.ImageRepo;
 import com.example.backend.repository.UserRepo;
 
 @Service
@@ -21,9 +22,6 @@ public class DataService {
     @Autowired
     private DataRepo dataRepo;
 
-    @Autowired
-    private ImageRepo imageRepo;
-
     public List<DataModel> getData(){
         return dataRepo.findAll();
     }
@@ -33,30 +31,36 @@ public class DataService {
     public List<DataModel> postAllData(List<DataModel> data){
         return dataRepo.saveAll(data);
     }
-    public DataModel postData(DataModel data){
-        return dataRepo.save(data);
-    }
+    // public DataModel postData(DataModel data){
+    //     return dataRepo.save(data);
+    // }
     public List<DataModel> getDataByUserId(){
         return dataRepo.getByUserId();
     }
 
-    public void deleteUser(int userId) {
-        dataRepo.deleteById(userId);
+    public void deleteData(int dataId) {
+        dataRepo.deleteById(dataId);
     }
 
-    public DataModel saveDataWithImages(DataModel dataModel) {
-        UserModel user = userRepo.findById(dataModel.getUser().getUserId())
-        .orElseThrow(() -> new Error("User not found"));
+    public DataModel editData(int dataId, String newStatus) {
+        DataModel data = dataRepo.findById(dataId).orElseThrow(() -> new Error("Not Found"));
+        data.setLoanStatus(newStatus);
+        // data.setRepaymentDate(user.getRepaymentDate());
+        return dataRepo.save(data);
+    }
 
-        // Associate the user with the form data
-        dataModel.setUser(user);
+    // public DataModel editDataPayment(int dataId, String newStatus) {
+    //     DataModel data = dataRepo.findById(dataId).orElseThrow(() -> new Error("Not Found"));
+    //     // data.setLoanStatus(newStatus);
+    //     data.setRepaymentDate(newStatus);
+    //     return dataRepo.save(data);
+    // }
 
-        ImageModel imageModel = dataModel.getImage();
-        if (imageModel != null) {
-            ImageModel savedImage = imageRepo.save(imageModel);
-            dataModel.setImage(savedImage);
-        }
-        return dataRepo.save(dataModel);
+    public DataModel postData(DataModel dataModel) {
+            UserModel user = userRepo.findById(dataModel.getUser().getUserId())
+            .orElseThrow(() -> new Error("User not found"));
+            dataModel.setUser(user);
+            return dataRepo.save(dataModel);
 
     }
 }

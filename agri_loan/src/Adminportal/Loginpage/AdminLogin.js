@@ -66,31 +66,33 @@ const AdminLogin = () => {
       localStorage.removeItem('rememberMe');
     }
 
-    axios
-      .get(`http://localhost:3009/admins?email=${email}&password=${password}`)
-      .then((res) => {
-        if (res.data.length > 0) {
+    // axios
+    //   .get(`http://localhost:3009/admins?email=${email}&password=${password}`)
+    //   .then((res) => {
+    //     if (res.data.length > 0) {
+    if(email==='admin@gmail.com' && password==='admin'){
           navigate("/admin/home");
+    // }
         } else {
           alert("User account doesn't exist");
         }
-      });
+      // });
   };
 
-  const handleAdminLogin = () => {
-    axios.post('http://your-api-url/login', { email, password })
-      .then((response) => {
-        const actualEmail = response.data.email; 
-        localStorage.setItem('rememberedEmail', actualEmail);
-        localStorage.setItem('rememberedPassword', password);
-        localStorage.setItem('rememberMe', true);
-        setEmail(actualEmail);
-        navigate('/admin/home');
-      })
-      .catch((error) => {
-        console.error('Login failed:', error);
-      });
-  };
+  // const handleAdminLogin = () => {
+  //   axios.post('http://your-api-url/login', { email, password })
+  //     .then((response) => {
+  //       const actualEmail = response.data.email; 
+  //       localStorage.setItem('rememberedEmail', actualEmail);
+  //       localStorage.setItem('rememberedPassword', password);
+  //       localStorage.setItem('rememberMe', true);
+  //       setEmail(actualEmail);
+  //       navigate('/admin/home');
+  //     })
+  //     .catch((error) => {
+  //       console.error('Login failed:', error);
+  //     });
+  // };
 
   const handlesignup = () => {
     navigate('/signup');

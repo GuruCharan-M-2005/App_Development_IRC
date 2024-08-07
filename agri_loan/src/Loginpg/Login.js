@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLock, faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { VscEye } from "react-icons/vsc";
 import { RiEyeCloseLine } from "react-icons/ri";
+import { useReactFlow } from 'react-flow-renderer';
 
 const Loginpg = () => {
   const [email, setEmail] = useState('');
@@ -65,29 +66,22 @@ const Loginpg = () => {
     }
   
     try {
-      // Fetch users and reset islogin
-      // Ensure the endpoint for fetching all users exists in your Spring Boot controller
-      // const response = await axios.get('http://localhost:8080/user'); // Placeholder; adjust based on actual endpoint
-      // const users = response.data;
-    
-      // Reset islogin to 0 for all users
-      // await Promise.all(users.map(user =>
-      //   axios.put(`http://localhost:8080/user/updateLoginStatus/${user.id}`, { islogin: 0 })
-      // ));
-    
-      // Fetch the current user
-      const userResponse = await axios.get(`http://localhost:8080/user/isUserPresent/${email}/${password}`);
-      if (userResponse.data) {
-        const user = userResponse.data;
-        const userId = user.userId;
-    
-        // Set islogin to 1 for the current user
-        await axios.put(`http://localhost:8080/user/updateLoginStatus/${userId}`, { islogin: 1 });
-    
-        navigate("/");
-      } else {
-        alert("User account doesn't exist");
-      }
+      setTimeout( async() => {
+        const userResponse = await axios.get(`http://localhost:8080/user/isUserPresent/${email}/${password}`);
+        // console.log(userResponse.data);
+      
+        if (userResponse.data) {
+          navigate("/");
+          const userId = userResponse.data.userId;
+          console.log(userId);
+      
+          await axios.put(`http://localhost:8080/user/updateLoginStatus/${userId}`, { islogin: 1 });
+      
+        } else {
+          alert("User account doesn't exist");
+        }
+        
+      }, 100);
     } catch (error) {
       console.error("An error occurred:", error);
       alert("An error occurred while processing your request.");

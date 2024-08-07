@@ -18,6 +18,7 @@ const defaultOptions = {
 
 const DropdownMenu = ({ isLoggedIn, handleLogin, handleLogout }) => {
   const [username, setUsername] = useState('');
+  const [userId, setUserId] = useState(0);
   const navigate = useNavigate();
 
   useEffect(  () => {
@@ -27,8 +28,11 @@ const DropdownMenu = ({ isLoggedIn, handleLogin, handleLogout }) => {
         .then(response => {
           // const users = response.data.find(users => users.islogin === 1);
           // if (users) {
+            if(response.data){
+            console.log(response.data)
             setUsername(response.data.username);
-          // }
+            setUserId(response.data.userId)
+          }
         })
         .catch(error => {
           console.error('Error fetching user data:', error);
@@ -39,6 +43,12 @@ const DropdownMenu = ({ isLoggedIn, handleLogin, handleLogout }) => {
   const handleMyApplications = () => {
     navigate('/my-applications');
   };
+
+  const handleLogoutFunc = async()=>{
+    handleLogout();
+    await axios.put(`http://localhost:8080/user/updateLoginStatus/${userId}`, { islogin: 0 });
+      
+  }
 
   return (
     <div className="dropdown-menu">
@@ -56,7 +66,7 @@ const DropdownMenu = ({ isLoggedIn, handleLogin, handleLogout }) => {
             <div className="line"></div>
           </div>
           <div className="logout-function">
-            <button onClick={handleLogout} className="logout-buttton"><LogOut className="dropdown-icon" />Logout</button>
+            <button onClick={()=>handleLogoutFunc()} className="logout-buttton"><LogOut className="dropdown-icon" />Logout</button>
           </div>
         </>
       ) : (

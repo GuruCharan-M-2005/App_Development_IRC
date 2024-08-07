@@ -3,15 +3,17 @@ import './Modal.css';
 import { sendEmail } from './emailService';
 import ReactDOM from 'react-dom';
 import { FcPrint } from "react-icons/fc";
+import axios from 'axios';
 
-const Modal = ({ show, onClose, application, onStatusChange, onRefresh }) => {
+const Modal = ({ show, onClose, onStatusChange, application, onRefresh }) => {
   const [status, setStatus] = useState('');
   const [notification, setNotification] = useState('');
   const [isSpinning, setIsSpinning] = useState(false);
 
   useEffect(() => {
+    console.log(application)
     if (application) {
-      setStatus(application.status);
+      setStatus(application.loanStatus);
     }
   }, [application]);
 
@@ -19,9 +21,21 @@ const Modal = ({ show, onClose, application, onStatusChange, onRefresh }) => {
     return null;
   }
 
-  const handleApprove = () => {
+  const handleApprove =async (id) => {
+
+    // await axios.put(`http://localhost:8080/data/editDataLoanStatus/${id}`, {loanStatus: "Approved"})
+    //   method: 'PUT',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify({
+    //     ...application,
+    //     loanStatus: "Approved"
+    //   }),
+    // })
+    if(application.cibilScore<5){
+      return null;
+    }
     setStatus('Approved');
-    onStatusChange(application.id, 'Approved');
+    onStatusChange(id, 'Approved');
   
     
     let interestRate = 0;
@@ -56,14 +70,7 @@ const Modal = ({ show, onClose, application, onStatusChange, onRefresh }) => {
       };
     });
   
-    fetch(`http://localhost:4000/applications/${application.id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        ...application,
-        repaymentSchedule: newSchedule
-      }),
-    })
+   /* await axios.put(`http://localhost:8080/data/editDataRepaymentStatus/${application.dataId}/${newSchedule}`)
     .then(response => response.json())
     .then(() => {
       setNotification(`Message has been sent to ${application.firstName}`);
@@ -85,18 +92,26 @@ const Modal = ({ show, onClose, application, onStatusChange, onRefresh }) => {
     .catch(() => {
       setNotification('Failed to send message.');
       setTimeout(() => setNotification(''), 3000);
-    });
+    });*/
   };
   
-  const handleReject = () => {
+  const handleReject = async(id) => {
+    // await axios.put(`http://localhost:8080/data/editDataLoanStatus/${id}`, { loanStatus: "Rejected"})
+    //   method: 'PUT',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify({
+    //     ...application,
+    //     loanStatus: "Rejected"
+    //   }),
+    // })
     setStatus('Rejected');
-    onStatusChange(application.id, 'Rejected'); 
+    onStatusChange(application.dataId, 'Rejected'); 
 
     
     sendEmail(
       application.email,
       'Your Loan Application Status',
-      `We regret to inform you that your loan application ${application.id} has been rejected.`
+      `We regret to inform you that your loan application ${application.dataId} has been rejected.`
     )
     .then(() => {
       setNotification(`Message has been sent to ${application.firstName}`);
@@ -110,7 +125,7 @@ const Modal = ({ show, onClose, application, onStatusChange, onRefresh }) => {
 
   const handleRevertToReview = () => {
     setStatus('yet to review');
-    onStatusChange(application.id, 'Yet to Review'); 
+    onStatusChange(application.dataId, 'Yet to Review'); 
   };
 
   const handleRefresh = () => {
@@ -137,7 +152,7 @@ const Modal = ({ show, onClose, application, onStatusChange, onRefresh }) => {
       </head>
       <body>
         <h2>Application Details</h2>
-        <p><strong>ID:</strong> ${application.id}</p>
+        <p><strong>ID:</strong> ${application.dataId}</p>
         <p><strong>Applicant Name:</strong> ${application.firstName} ${application.lastName}</p>
         <p><strong>Loan Amount:</strong> ${application.loanAmount}</p>
         <p><strong>Loan Type:</strong> ${application.loanType}</p>
@@ -177,7 +192,7 @@ const Modal = ({ show, onClose, application, onStatusChange, onRefresh }) => {
           <button onClick={onClose} className="close-btn">&times;</button>
         </div>
         <div className="modal-body">
-          <p><strong>ID:</strong> {application.id}</p>
+          <p><strong>ID:</strong> {application.dataId}</p>
           <p><strong>Applicant Name:</strong> {application.firstName} {application.lastName}</p>
           <p><strong>Loan Amount:</strong> {application.loanAmount}</p>
           <p><strong>Loan Type:</strong> {application.loanType}</p>
@@ -204,8 +219,8 @@ const Modal = ({ show, onClose, application, onStatusChange, onRefresh }) => {
         <div className="modal-footer">
           {status === 'yet to review' ? (
             <>
-              <button onClick={handleApprove} className="approve-btn">Approve</button>
-              <button onClick={handleReject} className="reject-btn">Reject</button>
+              <button onClick={()=>handleApprove(application.dataId)} className="approve-btn">Approve</button>
+              <button onClick={()=>handleReject(application.dataId)} className="reject-btn">Reject</button>
             </>
           ) : (
             <>

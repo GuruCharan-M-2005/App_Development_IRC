@@ -31,14 +31,14 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchLoanData = async () => {
       try {
-        const response = await axios.get('http://localhost:4000/applications');
+        const response = await axios.get('http://localhost:8080/data/getall');
         const data = response.data;
         
    
         setTotalRequests(data.length);
-        setApprovedLoans(data.filter(app => app.status === 'Approved').length);
-        setRejectedLoans(data.filter(app => app.status === 'Rejected').length);
-        setYetToReview(data.filter(app => app.status === 'Yet to Review').length);
+        setApprovedLoans(data.filter(app => app.loanStatus === 'Approved').length);
+        setRejectedLoans(data.filter(app => app.loanStatus === 'Rejected').length);
+        setYetToReview(data.filter(app => app.loanStatus === 'Yet to Review').length);
 
         setLoanData(data);
         setLoading(false);
