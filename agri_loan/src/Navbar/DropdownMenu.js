@@ -47,6 +47,7 @@ const DropdownMenu = ({ isLoggedIn, handleLogin, handleLogout }) => {
   const handleLogoutFunc = async()=>{
     handleLogout();
     await axios.put(`http://localhost:8080/user/updateLoginStatus/${userId}`, { islogin: 0 });
+    navigate('/')
       
   }
 
